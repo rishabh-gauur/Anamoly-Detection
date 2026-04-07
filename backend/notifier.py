@@ -2,11 +2,13 @@ import os
 from twilio.rest import Client
 from plyer import notification
 from dotenv import load_dotenv
+import requests
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 def send_sms_alert(mobile_number, patient_data, risk_probability):
     message_body = f"URGENT: High health risk detected! (Probability: {risk_probability:.1%})\nPatient Stats: SpO2={patient_data.get('spo2')}%, HR={patient_data.get('heart_rate')} bpm, BP={patient_data.get('systolic_bp')}/{patient_data.get('diastolic_bp')}\nPlease check patient immediately."
+
     
     # 1. Fire native Windows Push Notification
     try:
@@ -19,30 +21,27 @@ def send_sms_alert(mobile_number, patient_data, risk_probability):
     except Exception as e:
         print(f"OS notification failed: {e}")
 
-    # 2. Fire actual Telegram Push Notification
-    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-    chat_id = os.environ.get('TELEGRAM_CHAT_ID')
+    # 2. Fire Pushover Notification (Replacing SMS)
+    pushover_user_key = os.environ.get('PUSHOVER_USER_KEY')
+    pushover_app_token = os.environ.get('PUSHOVER_APP_TOKEN')
+    
+    if not pushover_user_key or not pushover_app_token or pushover_app_token == 'your_app_token_here':
+        print("[error] Pushover not fully configured in .env file!")
+        return False
+        
+    try:
+        print("Sending Pushover Mobile Notification...")
+        resp = requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": pushover_app_token,
+            "user": pushover_user_key,
+            "message": message_body,
+            "title": "URGENT HEALTH ALERT"
+        })
+        if resp.ok:
+            print(f"[success] Pushover Mobile Notification sent successfully!")
+        else:
+            print(f"[error] Failed to send Pushover notification: {resp.text}")
+    except Exception as e:
+        print(f"[error] Pushover request failed: {e}")
 
-    if bot_token and bot_token != 'your_bot_token_here':
-        import requests
-        try:
-            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-            payload = {
-                "chat_id": chat_id,
-                "text": message_body
-            }
-            resp = requests.post(url, json=payload)
-            if resp.status_code == 200:
-                print("[success] Real Push Notification sent via Telegram!")
-            else:
-                print(f"[error] Failed to send Telegram: {resp.text}")
-        except Exception as e:
-            print(f"[error] Telegram request failed: {e}")
-    else:
-        print("\n" + "="*55)
-        print("[MOCK TELEGRAM NOTIFICATION DISPATCHED] (Telegram not configured)")
-        print(f"To: {mobile_number} / Telegram Chat")
-        print(message_body)
-        print("="*55 + "\n")
-            
     return True

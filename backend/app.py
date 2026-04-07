@@ -105,14 +105,20 @@ def predict():
         }
         
         if is_high_risk:
+            print(f"HIGH RISK DETECTED: nurse_id={nurse_id}")
             conn = get_db_connection()
             nurse = conn.execute('SELECT mobile_number FROM nurses WHERE id = ?', (nurse_id,)).fetchone()
             conn.close()
             
+            print(f"FOUND NURSE: {bool(nurse)}")
             if nurse:
                 mobile_number = nurse['mobile_number']
+                print(f"CALLING send_sms_alert for {mobile_number}...")
                 send_sms_alert(mobile_number, patient_data, risk_prob)
                 result['alert_sent'] = True
+                print("send_sms_alert COMPLETE.")
+            else:
+                print(f"ERROR: Nurse with ID {nurse_id} not found in database!")
                 
         return jsonify(result), 200
 
