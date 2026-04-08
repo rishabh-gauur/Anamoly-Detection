@@ -193,11 +193,42 @@
                 </svg>
                 <h1>Admin Control Panel</h1>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div id="systemHealth" style="display: flex; gap: 15px; margin-right: 20px; font-size: 0.8rem; font-weight: 600;">
+                    <span id="simStatus" style="color: #64748b;">Simulation: ...</span>
+                    <span id="pushStatus" style="color: #64748b;">Mobile Push: ...</span>
+                </div>
                 <a href="ward-dashboard.html" class="btn-primary" style="display: inline-block; text-decoration: none;">View Ward Analytics Board →</a>
                 <button id="logoutBtn" class="btn-logout">Logout System</button>
             </div>
         </header>
+
+        <script>
+            async function checkSystemHealth() {
+                try {
+                    const res = await fetch('https://final-project-jjw5.onrender.com/api/admin/status');
+                    const data = await res.json();
+                    
+                    const simSpan = document.getElementById('simStatus');
+                    const pushSpan = document.getElementById('pushStatus');
+                    
+                    simSpan.textContent = `Simulation: ✅ ${data.simulation}`;
+                    simSpan.style.color = '#059669';
+                    
+                    if (data.pushover_configured) {
+                        pushSpan.textContent = 'Mobile Push: ✅ Configured';
+                        pushSpan.style.color = '#059669';
+                    } else {
+                        pushSpan.textContent = 'Mobile Push: ❌ Missing Keys';
+                        pushSpan.style.color = '#dc2626';
+                    }
+                } catch (e) {
+                    console.error("Health check failed", e);
+                }
+            }
+            checkSystemHealth();
+            setInterval(checkSystemHealth, 30000); // Check every 30s
+        </script>
 
         <main class="dashboard-content">
             <!-- Staff List Panel -->

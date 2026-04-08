@@ -7,14 +7,18 @@ import joblib
 import os
 import json
 import pandas as pd
+import threading
+from datetime import datetime
 
-import os
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
 CORS(app)
 
-# Initialize DB on startup (creates tables + default admin if not exists)
+# Initialize Database
 database.init_db()
+
+# Start background simulation thread automatically
+start_simulation()
 
 @app.route('/')
 def index():
@@ -244,6 +248,16 @@ def get_notifications(user_id):
         # Filter notifications for assigned beds
         user_nots = [n for n in nots if (n['ward'], n['bed']) in assigned_beds]
         return jsonify({'success': True, 'notifications': user_nots[:10]})
+
+@app.route('/api/admin/status', methods=['GET'])
+def get_system_status():
+    pushover_user = os.environ.get('PUSHOVER_USER_KEY')
+    pushover_app = os.environ.get('PUSHOVER_APP_TOKEN')
+    return jsonify({
+        'simulation': 'Running',
+        'pushover_configured': bool(pushover_user and pushover_app),
+        'timestamp': datetime.now().isoformat()
+    })
 
 @app.route('/api/admin/test_alert', methods=['POST'])
 def test_admin_alert():
