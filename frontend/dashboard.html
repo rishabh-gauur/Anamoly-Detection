@@ -76,7 +76,7 @@
                 const cachedNurse = JSON.parse(nurseStr);
                 currentNurseId = cachedNurse.id;
                 
-                const response = await fetch(`http://localhost:5000/api/staff/${cachedNurse.id}`);
+                const response = await fetch(`https://final-project-jjw5.onrender.com/api/staff/${cachedNurse.id}`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -114,7 +114,7 @@
         async function fetchNotifications() {
             if (!currentNurseId) return;
             try {
-                const res = await fetch(`http://localhost:5000/api/notifications/${currentNurseId}`);
+                const res = await fetch(`https://final-project-jjw5.onrender.com/api/notifications/${currentNurseId}`);
                 const data = await res.json();
                 
                 if (data.success && data.notifications.length > 0) {

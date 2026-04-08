@@ -45,7 +45,7 @@
         
         async function fetchPatient() {
             try {
-                const res = await fetch(`http://localhost:5000/api/patient/${ward}/${bed}`);
+                const res = await fetch(`https://final-project-jjw5.onrender.com/api/patient/${ward}/${bed}`);
                 const data = await res.json();
                 const content = document.getElementById('reportContent');
                 

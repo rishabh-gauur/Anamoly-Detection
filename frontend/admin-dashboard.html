@@ -325,7 +325,7 @@
             if (!confirm(`Are you sure you want to permanently delete Staff ID: ${id}?`)) return;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/staff/${id}`, { method: 'DELETE' });
+                const response = await fetch(`https://final-project-jjw5.onrender.com/api/admin/staff/${id}`, { method: 'DELETE' });
                 const data = await response.json();
                 if (data.success) {
                     staffSelectPrompt.style.display = 'block';
@@ -342,7 +342,7 @@
         async function deleteAllocation(allocId) {
             if (!confirm('Remove this ward assignment?')) return;
             try {
-                const response = await fetch(`http://localhost:5000/api/admin/allocate/${allocId}`, { method: 'DELETE' });
+                const response = await fetch(`https://final-project-jjw5.onrender.com/api/admin/allocate/${allocId}`, { method: 'DELETE' });
                 const data = await response.json();
                 if (data.success) {
                     loadStaff(); // Reload table and UI
@@ -399,7 +399,7 @@
         // Load Staff
         async function loadStaff() {
             try {
-                const response = await fetch('http://localhost:5000/api/admin/staff');
+                const response = await fetch('https://final-project-jjw5.onrender.com/api/admin/staff');
                 const data = await response.json();
 
                 staffTableBody.innerHTML = '';
@@ -457,7 +457,7 @@
             allocateBtn.disabled = true;
 
             try {
-                const response = await fetch('http://localhost:5000/api/admin/allocate', {
+                const response = await fetch('https://final-project-jjw5.onrender.com/api/admin/allocate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ staffId, ward_number, bed_number })
