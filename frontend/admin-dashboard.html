@@ -194,7 +194,6 @@
                 <h1>Admin Control Panel</h1>
             </div>
             <div style="display: flex; gap: 10px;">
-                <button id="testAlertBtn" class="btn-primary" style="background-color: #8b5cf6;">🚀 Test Mobile Alert</button>
                 <a href="ward-dashboard.html" class="btn-primary" style="display: inline-block; text-decoration: none;">View Ward Analytics Board →</a>
                 <button id="logoutBtn" class="btn-logout">Logout System</button>
             </div>
@@ -491,27 +490,6 @@
 
         // Init
         loadStaff();
-
-        const testAlertBtn = document.getElementById('testAlertBtn');
-        testAlertBtn.addEventListener('click', async () => {
-            testAlertBtn.disabled = true;
-            testAlertBtn.textContent = 'Verifying Connection...';
-            try {
-                const res = await fetch('https://final-project-jjw5.onrender.com/api/admin/test_alert', { method: 'POST' });
-                const data = await res.json();
-                
-                if (data.success) {
-                    alert('✅ SUCCESS: ' + data.message);
-                } else {
-                    alert('❌ CONFIG ERROR: ' + data.message);
-                }
-            } catch (e) {
-                alert('❌ NETWORK ERROR: Failed to reach the Render backend. The server might be sleeping.');
-            } finally {
-                testAlertBtn.disabled = false;
-                testAlertBtn.textContent = '🚀 Test Mobile Alert';
-            }
-        });
     </script>
     <!-- Shared Notification Engine -->
     <script src="js/notifications.js"></script>
