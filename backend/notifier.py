@@ -11,9 +11,15 @@ def send_mobile_push(patient_name, ward, bed, patient_data, risk_probability):
     pushover_user_key = os.environ.get('PUSHOVER_USER_KEY')
     pushover_app_token = os.environ.get('PUSHOVER_APP_TOKEN')
     
-    if not pushover_user_key or not pushover_app_token or pushover_app_token == 'your_app_token_here':
-        print("[error] Pushover not fully configured in .env or Render variables!")
-        return False
+    if not pushover_user_key or not pushover_app_token:
+        error_msg = "Pushover keys (USER_KEY/APP_TOKEN) missing from Environment Variables!"
+        print(f"[error] {error_msg}")
+        return False, error_msg
+
+    if pushover_app_token == 'your_app_token_here':
+        error_msg = "Pushover keys are still set to default placeholders!"
+        print(f"[error] {error_msg}")
+        return False, error_msg
         
     try:
         print(f"Broadcasting Mobile Push Alert for {patient_name}...")
@@ -22,14 +28,18 @@ def send_mobile_push(patient_name, ward, bed, patient_data, risk_probability):
             "user": pushover_user_key,
             "message": message_body,
             "title": "URGENT HEALTH ALERT",
-            "priority": 1  # High priority bypasses quiet hours
+            "priority": 1
         })
         if resp.ok:
             print(f"[success] Mobile Push Alert sent to your devices!")
-            return True
+            return True, "Alert sent successfully to your device!"
         else:
-            print(f"[error] API response: {resp.text}")
+            error_msg = f"Pushover API rejected the request: {resp.text}"
+            print(f"[error] {error_msg}")
+            return False, error_msg
     except Exception as e:
-        print(f"[error] Request failed: {e}")
+        error_msg = f"Network failure connecting to Pushover: {str(e)}"
+        print(f"[error] {error_msg}")
+        return False, error_msg
 
-    return False
+    return False, "Unknown failure in notification engine."

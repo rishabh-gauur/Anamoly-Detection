@@ -107,11 +107,13 @@ def simulate_loop():
                                 p['last_sms_sent'] = now_time
                                 try:
                                     from notifier import send_mobile_push
-                                    # Automated Broadcast: Send directly to your account ID
-                                    t = threading.Thread(
-                                        target=send_mobile_push, 
-                                        args=(p['name'], w, b, v, prob)
-                                    )
+                                    # Automated Broadcast: Running in background
+                                    def bg_push():
+                                        success, msg = send_mobile_push(p['name'], w, b, v, prob)
+                                        if not success:
+                                            print(f"[simulation-error] Auto-Push failed: {msg}")
+
+                                    t = threading.Thread(target=bg_push)
                                     t.daemon = True
                                     t.start()
                                 except Exception as e:

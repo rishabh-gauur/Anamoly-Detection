@@ -252,15 +252,12 @@ def test_admin_alert():
         # Mock vitals for manual test
         vitals = {'spo2': 90, 'heart_rate': 120, 'bp': '140/90', 'resp_rate': 24}
         
-        # Trigger Broadcast in background
-        threading.Thread(
-            target=send_mobile_push, 
-            args=("MANUAL TEST", "Admin", "Unit 1", vitals, 0.99)
-        ).start()
+        # Call synchronously for immediate diagnostic feedback
+        success, message = send_mobile_push("MANUAL TEST", "Admin", "Unit 1", vitals, 0.99)
         
-        return jsonify({'success': True, 'message': 'Test push alert dispatched to your account ID.'})
+        return jsonify({'success': success, 'message': message})
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': f"Server Error: {str(e)}"})
 
 @app.route('/api/predict', methods=['POST'])
 def manual_predict():
