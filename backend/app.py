@@ -8,7 +8,11 @@ import os
 import json
 import pandas as pd
 import threading
+import warnings
 from datetime import datetime
+
+# Suppress noisy sklearn warnings in production logs
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn.utils.parallel")
 
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='')

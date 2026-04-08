@@ -5,9 +5,13 @@ import os
 import threading
 import pandas as pd
 import joblib
+import warnings
 from datetime import datetime
 from database import get_db_connection
 from notifier import send_mobile_push
+
+# Suppress noisy sklearn warnings in production logs
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn.utils.parallel")
 
 DIR_PATH = os.path.dirname(__file__)
 LIVE_DATA_FILE = os.path.join(DIR_PATH, 'live_patients.json')
