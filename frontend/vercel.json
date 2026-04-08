@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://final-project-jjw5.onrender.com/api/:path*"
+            "destination": "https://anamoly-detection-1.onrender.com/api/:path*"
         }
     ],
     "redirects": [

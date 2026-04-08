@@ -30,6 +30,8 @@ def index():
 
 @app.route('/<path:path>')
 def serve_file(path):
+    if path.startswith('api/'):
+        return jsonify({'success': False, 'message': 'API route not found on this server'}), 404
     return app.send_static_file(path)
 
 

@@ -15,5 +15,5 @@ const API_CONFIG = (() => {
     }
 
     // Deployed on Vercel or any other external host — point to Render backend
-    return { BASE_URL: 'https://final-project-jjw5.onrender.com' };
+    return { BASE_URL: 'https://anamoly-detection-1.onrender.com' };
 })();
