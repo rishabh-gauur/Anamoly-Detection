@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: hospital-monitor-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
+    envVars:
+      - key: PUSHOVER_USER_KEY
+        sync: false
+      - key: PUSHOVER_APP_TOKEN
+        sync: false

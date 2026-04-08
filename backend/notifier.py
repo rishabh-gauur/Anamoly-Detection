@@ -1,6 +1,4 @@
 import os
-from twilio.rest import Client
-from plyer import notification
 from dotenv import load_dotenv
 import requests
 
@@ -9,9 +7,9 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 def send_sms_alert(mobile_number, patient_name, ward, bed, patient_data, risk_probability):
     message_body = f"CRITICAL: {patient_name} in {ward} / Bed {bed}! (Risk: {risk_probability:.1%})\nVitals: SpO2={patient_data.get('spo2')}%, HR={patient_data.get('heart_rate')} bpm, BP={patient_data.get('bp')}, Resp={patient_data.get('resp_rate')}\nPlease check patient immediately."
 
-    
-    # 1. Fire native Windows Push Notification
+    # 1. Fire native OS Push Notification (Windows only, skip on Linux/cloud)
     try:
+        from plyer import notification
         notification.notify(
             title="URGENT HEALTH ALERT",
             message=message_body,
@@ -19,7 +17,7 @@ def send_sms_alert(mobile_number, patient_name, ward, bed, patient_data, risk_pr
             timeout=10
         )
     except Exception as e:
-        print(f"OS notification failed: {e}")
+        print(f"OS notification failed (expected on Linux): {e}")
 
     # 2. Fire Pushover Notification (Replacing SMS)
     pushover_user_key = os.environ.get('PUSHOVER_USER_KEY')

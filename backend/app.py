@@ -13,6 +13,9 @@ frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fr
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
 CORS(app)
 
+# Initialize DB on startup (creates tables + default admin if not exists)
+database.init_db()
+
 @app.route('/')
 def index():
     return app.send_static_file('login.html')
