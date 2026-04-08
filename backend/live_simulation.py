@@ -105,14 +105,19 @@ def simulate_loop():
                             now_time = time.time()
                             if (now_time - p.get('last_sms_sent', 0)) > 60:
                                 p['last_sms_sent'] = now_time
-                                # Find assigned staff and send SMS
                                 try:
+                                    # Find assigned staff AND all admins to ensure message is delivered
                                     conn = get_db_connection()
-                                    allocs = conn.execute("SELECT u.mobile_number FROM allocations a JOIN users u ON a.user_id = u.id WHERE a.ward_number=? AND a.bed_number=?", (w, b)).fetchall()
+                                    recipients = conn.execute("""
+                                        SELECT u.mobile_number FROM users u 
+                                        LEFT JOIN allocations a ON u.id = a.user_id 
+                                        WHERE (a.ward_number=? AND a.bed_number=?) OR u.role='admin'
+                                    """, (w, b)).fetchall()
                                     conn.close()
                                     
-                                    for alloc in allocs:
-                                        target_phone = alloc['mobile_number'] or 'N/A'
+                                    unique_numbers = set(r['mobile_number'] for r in recipients if r['mobile_number'])
+                                    
+                                    for target_phone in unique_numbers:
                                         # Trigger Pushover broadcast via background thread
                                         t = threading.Thread(target=send_sms_alert, args=(target_phone, p['name'], w, b, v, prob))
                                         t.daemon = True

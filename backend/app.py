@@ -212,12 +212,24 @@ def get_patient_report(ward, bed):
 
 @app.route('/api/notifications/<int:user_id>', methods=['GET'])
 def get_notifications(user_id):
-    # Get beds assigned to this user
     conn = get_db_connection()
-    allocs = conn.execute("SELECT ward_number, bed_number FROM allocations WHERE user_id=?", (user_id,)).fetchall()
-    conn.close()
+    user = conn.execute("SELECT role FROM users WHERE id=?", (user_id,)).fetchone()
     
-    assigned_beds = [ (a['ward_number'], a['bed_number']) for a in allocs ]
+    if not user:
+        conn.close()
+        return jsonify({'success': False, 'message': 'User not found'})
+
+    is_admin = (user['role'] == 'admin')
+    
+    if is_admin:
+        # Admins see all notifications
+        assigned_beds = None
+    else:
+        # Staff only see notifications for their assigned beds
+        allocs = conn.execute("SELECT ward_number, bed_number FROM allocations WHERE user_id=?", (user_id,)).fetchall()
+        assigned_beds = [ (a['ward_number'], a['bed_number']) for a in allocs ]
+    
+    conn.close()
     
     if not os.path.exists(NOTIFICATIONS_FILE):
         return jsonify({'success': True, 'notifications': []})
@@ -225,9 +237,13 @@ def get_notifications(user_id):
     with open(NOTIFICATIONS_FILE, 'r') as f:
         nots = json.load(f)
         
-    # Filter notifications for assigned beds
-    user_nots = [n for n in nots if (n['ward'], n['bed']) in assigned_beds]
-    return jsonify({'success': True, 'notifications': user_nots[:10]})
+    if is_admin:
+        # Return all
+        return jsonify({'success': True, 'notifications': nots[:10]})
+    else:
+        # Filter notifications for assigned beds
+        user_nots = [n for n in nots if (n['ward'], n['bed']) in assigned_beds]
+        return jsonify({'success': True, 'notifications': user_nots[:10]})
 
 @app.route('/api/predict', methods=['POST'])
 def manual_predict():
