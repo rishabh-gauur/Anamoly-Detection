@@ -32,8 +32,7 @@ def index():
 def serve_file(path):
     return app.send_static_file(path)
 
-# Start Live Patient Simulator
-start_simulation()
+
 
 current_dir = os.path.dirname(__file__)
 model_path = os.path.join(current_dir, '..', 'ml', 'model.pkl')

@@ -2,9 +2,9 @@
 // This script handles polling the API for new anomaly alerts and displaying them as Toast "Dialogue Boxes"
 
 (function() {
-    // Configuration
-    // If we are on Render, use relative path. Otherwise, use the fallback Render URL.
-    const API_BASE = window.location.hostname.includes('onrender.com') ? '' : 'https://final-project-jjw5.onrender.com';
+    // Configuration — uses the shared API_CONFIG from config.js
+    const API_BASE = (typeof API_CONFIG !== 'undefined') ? API_CONFIG.BASE_URL : '';
+
     const POLL_INTERVAL = 4000; // 4 seconds
     let lastNotificationId = null;
 

@@ -51,6 +51,7 @@
         </form>
     </div>
 
+    <script src="js/config.js"></script>
     <script>
         const loginForm = document.getElementById('loginForm');
         const errorMessage = document.getElementById('errorMessage');
@@ -88,8 +89,8 @@
 
             try {
                 // Send AJAX request to our API endpoint
-                const apiBase = window.location.hostname.includes('onrender.com') ? '' : 'https://final-project-jjw5.onrender.com';
-                const response = await fetch(`${apiBase}/api/login`, {
+                // Use relative path if already on Render, otherwise point to local or fallback
+                const response = await fetch(`${API_CONFIG.BASE_URL}/api/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })

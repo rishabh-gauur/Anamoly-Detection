@@ -51,6 +51,8 @@
         </main>
     </div>
 
+    <!-- Shared Config -->
+    <script src="js/config.js"></script>
     <!-- Shared Notification Engine -->
     <script src="js/notifications.js"></script>
     <script>
@@ -65,7 +67,8 @@
                 const cachedNurse = JSON.parse(nurseStr);
                 currentNurseId = cachedNurse.id;
                 
-                const response = await fetch(`https://final-project-jjw5.onrender.com/api/staff/${cachedNurse.id}`);
+                const response = await fetch(`${API_CONFIG.BASE_URL}/api/staff/${cachedNurse.id}`);
+
                 const data = await response.json();
                 
                 if (data.success) {

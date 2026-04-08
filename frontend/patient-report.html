@@ -38,6 +38,7 @@
         </div>
     </div>
 
+    <script src="js/config.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const ward = params.get('ward');
@@ -45,7 +46,7 @@
         
         async function fetchPatient() {
             try {
-                const res = await fetch(`https://final-project-jjw5.onrender.com/api/patient/${ward}/${bed}`);
+                const res = await fetch(`${API_CONFIG.BASE_URL}/api/patient/${ward}/${bed}`);
                 const data = await res.json();
                 const content = document.getElementById('reportContent');
                 
