@@ -193,11 +193,10 @@
                 </svg>
                 <h1>Admin Control Panel</h1>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <a href="ward-dashboard.html" class="btn-primary" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 500; font-size: 0.9rem; background-color: #10b981;">Ward Analytics</a>
-                <a href="register.html" class="btn-primary" style="text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 500; font-size: 0.9rem;">Register Staff</a>
-                <button id="navRemoveStaffBtn" class="btn-danger" style="border: none; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 500; font-size: 0.9rem; cursor: pointer;">Remove Staff</button>
-                <button id="logoutBtn" class="btn-logout">Logout</button>
+            <div style="display: flex; gap: 10px;">
+                <button id="testAlertBtn" class="btn-primary" style="background-color: #8b5cf6;">🚀 Test Mobile Alert</button>
+                <a href="ward-dashboard.html" class="btn-primary" style="display: inline-block; text-decoration: none;">View Ward Analytics Board →</a>
+                <button id="logoutBtn" class="btn-logout">Logout System</button>
             </div>
         </header>
 
@@ -492,6 +491,22 @@
 
         // Init
         loadStaff();
+
+        const testAlertBtn = document.getElementById('testAlertBtn');
+        testAlertBtn.addEventListener('click', async () => {
+            testAlertBtn.disabled = true;
+            testAlertBtn.textContent = 'Sending...';
+            try {
+                const res = await fetch('https://final-project-jjw5.onrender.com/api/admin/test_alert', { method: 'POST' });
+                const data = await res.json();
+                alert(data.message);
+            } catch (e) {
+                alert('Connection failed to Render backend.');
+            } finally {
+                testAlertBtn.disabled = false;
+                testAlertBtn.textContent = '🚀 Test Mobile Alert';
+            }
+        });
     </script>
     <!-- Shared Notification Engine -->
     <script src="js/notifications.js"></script>

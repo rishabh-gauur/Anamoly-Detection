@@ -40,9 +40,9 @@ def init_db():
     admin = conn.execute("SELECT * FROM users WHERE role = 'admin'").fetchone()
     if not admin:
         conn.execute('''
-            INSERT INTO users (name, username, email, password, role)
-            VALUES (?, ?, ?, ?, ?)
-        ''', ('System Admin', 'admin', 'admin@hospital.com', 'admin123', 'admin'))
+            INSERT INTO users (name, username, email, mobile_number, password, role)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', ('System Admin', 'admin', 'admin@hospital.com', '1234567890', 'admin123', 'admin'))
 
     conn.commit()
     conn.close()

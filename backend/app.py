@@ -245,6 +245,26 @@ def get_notifications(user_id):
         user_nots = [n for n in nots if (n['ward'], n['bed']) in assigned_beds]
         return jsonify({'success': True, 'notifications': user_nots[:10]})
 
+@app.route('/api/admin/test_alert', methods=['POST'])
+def test_admin_alert():
+    try:
+        from notifier import send_sms_alert
+        # Mock vitals for test
+        vitals = {'spo2': 90, 'heart_rate': 120, 'bp': '140/90', 'resp_rate': 24}
+        # Send to "admin" mobile number
+        conn = get_db_connection()
+        admin = conn.execute("SELECT mobile_number FROM users WHERE role='admin' LIMIT 1").fetchone()
+        conn.close()
+        
+        target = admin['mobile_number'] if admin else "1234567890"
+        
+        # Trigger in background
+        threading.Thread(target=send_sms_alert, args=(target, "TEST SYSTEM", "Admin", "Unit 1", vitals, 0.99)).start()
+        
+        return jsonify({'success': True, 'message': f'Test alert dispatched to {target}'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
 @app.route('/api/predict', methods=['POST'])
 def manual_predict():
     data = request.json['patient_data']
